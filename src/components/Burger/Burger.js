@@ -24,7 +24,7 @@ const burger = (props) => {
             return arr.concat(el)
         }, []);
     //[ meat1,meat2,sald ]
-    console.log(transformedIngredients);
+    // console.log(transformedIngredients);
 
 
     // console.log(test.map(igKey => {

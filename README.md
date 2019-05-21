@@ -12,6 +12,7 @@
   - React 16.8.6
   - CSS Module
   - PropsType
+  - Axios: AJAX
 
 ## Available Scripts
 In the project directory, you can run:
