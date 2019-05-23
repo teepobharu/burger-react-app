@@ -10,6 +10,7 @@
 
 ## Scope/Implementations
   - React 16.8.6
+  - React Router
   - CSS Module
   - PropsType
   - Axios: AJAX
