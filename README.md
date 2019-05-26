@@ -11,9 +11,15 @@
 ## Scope/Implementations
   - React 16.8.6
   - React Router
-  - CSS Module
-  - PropsType
+  - Redux 
   - Axios: AJAX
+  - PropsType
+  - CSS Module
+  - High Order Components
+  - Firebase
+
+## Live Server
+### `https://react-my-burger-b8b1b.firebaseapp.com`
 
 ## Available Scripts
 In the project directory, you can run:

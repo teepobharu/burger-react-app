@@ -9,12 +9,12 @@ const withErrorHandler = (WrappedComponent, axios) => {
         }
         componentWillMount() {
             this.reqInterceptor = axios.interceptors.request.use(request => {
-                console.log("TCL: extends -> componentDidMount -> request", request);
+                // console.log("TCL: extends -> componentDidMount -> request", request);
                 this.setState({ error: null })
                 return request;
             });
             this.resInterceptor = axios.interceptors.response.use(res => res, error => {
-                console.log("TCL: extends -> componentDidMount -> error", error);
+                // console.log("TCL: extends -> componentDidMount -> error", error);
                 this.setState({ error: error })
             });
         }

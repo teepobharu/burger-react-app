@@ -1,48 +1,55 @@
 import React, { Component } from 'react';
 
+import Spinner from '../../components/UI/Spinner/Spinner';
+import { Link } from 'react-router-dom';
+
 import Order from '../../components/Order/Order';
 import axios from '../../axios-order';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
+import * as actions from '../../store';
+import { connect } from 'react-redux';
+export class Orders extends Component {
 
-class Orders extends Component {
-    state = {
-        orders: [],
-        loading: true
-    }
     componentDidMount() {
-        console.log("Component DID MOUNT");
-        axios.get("/orders.json")
-            .then(res => {
-                console.log(res);
-                const fetchedOrders = [];
-                for (let key in res.data) {
-                    fetchedOrders.push({
-                        ...res.data[key],
-                        id: key
-                    });
-                }
-                this.setState({ orders: fetchedOrders, loading: false });
-            })
-            .catch(err => {
-                this.setState({ loading: false });
-            });
+        this.props.onFetchOrders(this.props.token, this.props.userId);
     }
 
     render() {
-        console.log(this.state.orders);
+        console.log(this.props.orders);
+        let orders = <Spinner></Spinner>
+        if (!this.props.loading) {
+            orders = this.props.orders.map(
+                order => (
+                    <Order
+                        key={order.id}
+                        ingredients={order.ingredients}
+                        price={order.price}
+                    />
+                )
+            )
+        }
+        let msg = orders.length < 1 ? <Link to={{ hash: "burgerControl", pathname: "/" }}><p style={{ textAlign: "center" }}>No recipe orders Yet! </p></Link> : null
+
         return (
             <div>
-                {this.state.orders.map(
-                    order => (
-                        <Order
-                            key={order.id}
-                            ingredients={order.ingredients}
-                            price={order.price}
-                        />
-                    )
-                )}
+                {msg}
+                {orders}
             </div>
         )
     }
 }
-export default withErrorHandler(Orders, axios);
+
+const mapStateToProps = (state) => {
+    return {
+        orders: state.order.orders,
+        loading: state.order.loading,
+        token: state.auth.token,
+        userId: state.auth.userId
+    }
+}
+const mapDispatchToProps = (dispatch) => {
+    return {
+        onFetchOrders: (token, id) => dispatch(actions.fetchOrders(token, id))
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(Orders, axios));

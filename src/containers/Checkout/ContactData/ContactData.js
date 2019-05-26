@@ -5,6 +5,11 @@ import Input from '../../../components/UI/Input/Input';
 
 import classes from './ContactData.css';
 import axios from '../../../axios-order';
+import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
+import { connect } from 'react-redux';
+import * as orderActionCreator from '../../../store/index';
+import { updateObject, checkValidity } from '.././../../shared/utility';
+
 
 class ContactData extends Component {
     state = {
@@ -95,59 +100,36 @@ class ContactData extends Component {
 
     orderHandler = () => {
         // this.event.preventDefault();
-        this.setState({ loading: true });
-        // console.log(this.props.ingredients);
+        // console.log(this.props.ings);
         // alert("Continue");
         // return;
         const formData = {};
         for (let formElementIdentifier in this.state.orderForm) {
-            formData[formElementIdentifier] = this.state.orderForm.value;
+            debugger;
+            formData[formElementIdentifier] = this.state.orderForm[formElementIdentifier].value;
         }
         const order = {
-            ingredients: this.props.ingredients,
+            ingredients: this.props.ings,
             price: this.props.price,
-            orderData: formData
+            orderData: formData,
+            userId: this.props.userId
         }
-        // console.log({ order });
-        axios.post('/orders.json', order)
-            .then(response => {
-                console.log({ response });
-                this.props.history.push('/');
-                this.setState({ loading: false });
-            })
-            .catch(error => {
-                console.log(error);
-                this.setState({ loading: false });
-            });
-    }
-    checkValidity = (value, rules) => {
-        let isValid = true;
-        if (!rules) {
-            return true;
-        }
-        if (rules.required) {
-            isValid = value.trim() !== '' && isValid;
-        }
-        console.log("TCL: ContactData -> checkValidity -> isValid", isValid)
-        if (rules.minLength) {
-            isValid = value.length >= rules.minLength && isValid
-        }
-        if (rules.maxLength) {
-            isValid = value.length <= rules.maxLength && isValid
-        }
-        return isValid;
+        console.table(order);
+        this.props.orderClick(this.props.token, order);
+
     }
     inputChangedHandler = (event, inputIdentifier) => {
         // console.log(event.target.value);
-        const updatedOrderForm = {
-            ...this.state.orderForm,
+
+        const updatedFormElement = updateObject(this.state.orderForm[inputIdentifier], {
+            value: event.target.value,
+            valid: checkValidity(event.target.value, this.state.orderForm[inputIdentifier].validation),
+            touched: true
+        });
+        const updatedOrderForm = updateObject(this.state.orderForm, {
+            [inputIdentifier]: updatedFormElement
         }
-        const updatedFormElement = {
-            ...updatedOrderForm[inputIdentifier]
-        };
-        updatedFormElement.value = event.target.value;
-        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
-        updatedFormElement.touched = true;
+        );
         console.table(updatedFormElement);
         updatedOrderForm[inputIdentifier] = updatedFormElement;
         this.setState({ orderForm: updatedOrderForm });
@@ -168,7 +150,7 @@ class ContactData extends Component {
             });
         }
         let form;
-        if (!this.state.loading) {
+        if (!this.props.loading) {
             form = (
                 <form>
                     {formElementsArray.map(formElement => (
@@ -183,11 +165,11 @@ class ContactData extends Component {
                             changed={(event) => this.inputChangedHandler(event, formElement.id)}
                         />
                     ))}
-                    <Button btnType="Success" clicked={this.orderHandler} disabled={!this.state.formIsValid}> ORDER  </Button>
+                    <Button btntype="Success" clicked={this.orderHandler} disabled={!this.state.formIsValid}> ORDER  </Button>
                 </form>
             );
         }
-        if (this.state.loading) {
+        if (this.props.loading) {
             form = <Spinner />;
         }
         return (
@@ -199,4 +181,19 @@ class ContactData extends Component {
     }
 }
 
-export default ContactData;
+const mapStateToProps = state => {
+    return {
+        ings: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.totalPrice,
+        loading: state.order.loading,
+        token: state.auth.token,
+        userId: state.auth.userId
+    }
+}
+const mapDispatchToProps = dispatch => {
+    return {
+        orderClick: (token, orderData) => dispatch(orderActionCreator.purchaseBurger(token, orderData)
+        )
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(ContactData, axios));

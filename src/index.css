@@ -9,3 +9,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.center{
+  text-align:center;
+  margin: 0 auto;
+  display:block;
+}
+:global .red{
+color:red;
+  font-weight: bold;
+}
