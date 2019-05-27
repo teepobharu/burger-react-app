@@ -1,6 +1,7 @@
-import * as actionTypes from './actionsTypes';
-// import axios from '../../axios-order';
-
+import * as actionTypes from '../actions/actionsTypes';
+import axios from '../../axios-order';
+import * as actions from '../index';
+import { put } from 'redux-saga/effects';
 
 export const addIngredient = (name) => {
 
@@ -30,8 +31,11 @@ export const setIngredients = (ingredients) => {
     };
 };
 
-export const initIngredients = () => {
-    return {
-        type: "INIT_INGREDIENT"
+export function* initIngredients(action) {
+    try {
+        const response = yield axios.get('https://react-my-burger-b8b1b.firebaseio.com/ingredients.json');
+        yield put(actions.setIngredients(response.data));
+    } catch (error) {
+        yield put(actions.fetchIngredientsFailed());
     }
-};
+}

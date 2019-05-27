@@ -12,6 +12,8 @@
   - React 16.8.6
   - React Router
   - Redux 
+  - Redux Thunk
+  - Redux Saga
   - Axios: AJAX
   - PropsType
   - CSS Module

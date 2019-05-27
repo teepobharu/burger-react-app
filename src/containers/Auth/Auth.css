@@ -15,3 +15,46 @@
             width: 500px;
         }
 }
+.SwitchMode{
+    border: 1px solid rgb(255, 193, 224);
+    width: 100%;
+    background: rgb(255, 254, 255);
+    display:block;
+    font-weight: bold;
+}
+.Signin{
+    color: red;
+    background: rgb(255, 249, 252);
+    padding: 1em;
+    border-color:  rgb(255, 228, 193);
+    transition: all 0.5s ease-in;
+}
+.Signup{
+    padding: 1em;
+    background: rgb(239, 255, 250);
+    border-color:  rgb(193, 230, 255);
+    color: orange;
+    transition: all 0.5s ease-in;
+
+}
+.TopHeader{
+    text-align: center;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    font-size: 1.3em;
+    animation: header 0.6s;
+    height: 1.4em;
+    box-sizing: border-box;
+    animation-iteration-count: infinite;
+}
+@keyframes header {
+    0% {
+        font-size: 1.3em;
+        color: blue;
+    }
+    100%{
+        font-size: 1.4em;
+        color: green;
+    }
+
+}

@@ -104,25 +104,30 @@ class Auth extends Component {
                 <p>{this.props.error.message}</p>
             )
         }
-        let authRedirect = null;
+        let authRedirect, logout = null;
         if (this.props.isAuth) {
             authRedirect = <Redirect to={this.props.authRedirectPath} />
+            logout = <Button clicked={(event) => this.logoutHandler(event)} btntype="Danger">Logout</Button>;
         }
+
         return (
-            <div>
+            <div className={this.state.isSignup ? classes.Signup : classes.Signin}>
                 {authRedirect}
-                <p style={{ textAlign: "center" }}>
+                <p className={classes.TopHeader}>
                     {this.state.isSignup ? "Signup" : "Signin"}
                     {errorMessage}
                 </p>
                 <form onSubmit={this.submitHandler} className={classes.Auth}>
                     {form}
-                    <Button btntype="Success">SUBMIT</Button>
+                    <Button btntype="Success">Confirm</Button>
                 </form>
                 <div style={{ textAlign: "center" }}>
-                    <Button clicked={(event) => this.logoutHandler(event)} btntype="Danger">Logout</Button>
-                    <Button type="button" clicked={this.switchAuthModeHandler}
-                        btntype="Danger">{this.state.isSignup ? "Switch To Signin" : "Switch to Singup"}</Button>
+                    {logout}
+                    <span className={classes.SwitchMode}>
+                        Go to
+                        <Button type="button" clicked={this.switchAuthModeHandler}
+                            btntype="Danger">{this.state.isSignup ? " Signin" : "Singup"}</Button>
+                    </span>
                 </div>
             </div >
         )

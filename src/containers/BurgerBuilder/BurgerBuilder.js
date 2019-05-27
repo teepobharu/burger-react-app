@@ -80,7 +80,6 @@ export class BurgerBuilder extends Component {
         });
     }
     render() {
-        const centerStyle = { textAlign: "center" };
         const disabledInfo = {
             ...this.props.ings
         };
@@ -97,9 +96,10 @@ export class BurgerBuilder extends Component {
                     <Burger ingredients={this.props.ings} />
                     <div className={classes.burgerBuild} id="burgerControl" ref={this.buildControlRef}>Burger Controls</div>
                     <textarea
-                        style={{ ...centerStyle, display: "block", margin: "0 auto" }}
+                        rows="5"
+                        style={{ display: "block", margin: "0.5em auto" }}
                         className="red center"
-                        defaultValue="Build a big yummy burger... focus!"
+                        defaultValue="Please Login to Order. Upon success you will redirect to Checkout Page with current Burger."
                         ref={this.textArea} />
 
                     < BuildControls
