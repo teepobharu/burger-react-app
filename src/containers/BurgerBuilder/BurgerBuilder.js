@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { connect } from 'react-redux';
 
@@ -15,34 +15,33 @@ import * as actions from '../../store/index';
 import classes from './BurgerBuilder.css';
 
 
-export class BurgerBuilder extends Component {
-    state = {
-        purchasing: false
-    }
-    constructor(props) {
-        super(props);
-        this.textarea = React.createRef();
-        this.buildControlRef = React.createRef();
-    }
-    componentDidUpdate() {
-        console.log("%c [BurgerBuilder] DidUpdate", "color:red", this.buildControlRef);
-        if (this.props.location.hash === "#burgerControl" && this.buildControlRef.current) {
-            console.log("%c HASH: %o %o", "color:green; font-weight:bold;", this.props.location.hash, this.buildControlRef)
-            this.scrollIntoView();
-            this.buildControlRef.current = null;
-            console.log(this.props.history);
-        }
-    }
-    componentDidMount = () => {
-        console.log("%c [BurgerBuilder] DidMount", "color:red");
-        this.props.onInitIngredients();
-        //Check for hash
-        console.log("%c [BurgerBuilder] %c Location: %o", "color:red", "color:pink; font-weight:bold;", this.props.location);
-        if (this.textarea.current) this.textarea.current.select();
+export const BurgerBuilder = props => {
+    const [purchasing, setPurchasing] = useState(false);
+    const textarea = React.createRef();
+    const buildControlRef = React.createRef();
 
+    useEffect(() => {
+        console.log("%c [BurgerBuilder] useEffect", "color:red");
+        props.onInitIngredients();
+    }, []);
+    useEffect(() => {
+        checkHash();
+    });
+    const checkHash = () => {
+        console.log("%c [BurgerBuilder] CheckHash", "color:red", buildControlRef);
+        if (props.location.hash === "#burgerControl" && buildControlRef.current) {
+            console.log("%c HASH: %o %o", "color:green; font-weight:bold;", props.location.hash, buildControlRef)
+            scrollIntoView();
+            buildControlRef.current = null;
+            console.log(props.history);
+        }
+        //Check for hash
+        console.log("%c [BurgerBuilder] %c Location: %o", "color:red", "color:pink; font-weight:bold;", props.location);
+        if (textarea.current) textarea.current.select();
     }
-    scrollIntoView = (ref) => {
-        this.buildControlRef.current.scrollIntoView({
+
+    const scrollIntoView = (ref) => {
+        buildControlRef.current.scrollIntoView({
             // optional params
             behaviour: 'smooth',
             block: 'start',
@@ -50,7 +49,7 @@ export class BurgerBuilder extends Component {
         });
 
     }
-    updatePurchaseState(ingredients) {
+    const updatePurchaseState = (ingredients) => {
         const sum = Object.keys(ingredients)
             .map(igKey => {
                 return ingredients[igKey];
@@ -61,80 +60,76 @@ export class BurgerBuilder extends Component {
         return sum > 0;
     }
 
-    purchaseHandler = () => {
-        if (this.props.isAuth) {
-            this.setState({ purchasing: true });
+    const purchaseHandler = () => {
+        if (props.isAuth) {
+            setPurchasing(true);
         } else {
-            this.props.onSetAuthRedirectPath("/checkout");
-            this.props.history.push("/auth");
+            props.onSetAuthRedirectPath("/checkout");
+            props.history.push("/auth");
         }
     }
-    purchaseCancelHandler = () => {
-        this.setState({ purchasing: false });
+    const purchaseCancelHandler = () => {
+        setPurchasing(false);
     }
-    purchaseContinueHandler = () => {
-        this.props.onInitPurchase();
-        this.props.history.push({
+    const purchaseContinueHandler = () => {
+        props.onInitPurchase();
+        props.history.push({
             pathname: 'checkout',
             search: '?queryString'
         });
     }
-    render() {
-        const disabledInfo = {
-            ...this.props.ings
-        };
-        for (let key in disabledInfo) {
-            disabledInfo[key] = disabledInfo[key] <= 0
-        }
-
-        let orderSummary = null;
-        let burger = this.props.error ? <p>Ingredient can't be loaded!</p> : <Spinner></Spinner>;
-
-        if (this.props.ings) {
-            burger = (
-                <Aux>
-                    <Burger ingredients={this.props.ings} />
-                    <div className={classes.burgerBuild} id="burgerControl" ref={this.buildControlRef}>Burger Controls</div>
-                    <textarea
-                        rows="5"
-                        style={{ display: "block", margin: "0.5em auto" }}
-                        className="red center"
-                        defaultValue="Please Login to Order. Upon success you will redirect to Checkout Page with current Burger."
-                        ref={this.textArea} />
-
-                    < BuildControls
-                        ingredientAdded={this.props.onIngredientAdded}
-                        ingredientRemove={this.props.onIngredientRemoved}
-                        disabled={disabledInfo}
-                        purchasable={this.updatePurchaseState(this.props.ings)}
-                        ordered={this.purchaseHandler}
-                        price={this.props.price}
-                        isAuth={this.props.isAuth}
-                    />
-                </Aux >
-            );
-            orderSummary = (
-                <OrderSummary
-                    ingredients={this.props.ings}
-                    purchaseCancel={this.purchaseCancelHandler}
-                    purchaseContinued={this.purchaseContinueHandler}
-                    price={this.props.price} />
-            )
-
-        }
-
-        return (
-            <Aux>
-                <Modal show={this.state.purchasing} modalClosed={this.purchaseCancelHandler}>
-                    {orderSummary}
-                </Modal>
-                <div className={classes.header}>Your Burger</div>
-                {burger}
-
-            </Aux>
-        );
+    const disabledInfo = {
+        ...props.ings
+    };
+    for (let key in disabledInfo) {
+        disabledInfo[key] = disabledInfo[key] <= 0
     }
 
+    let orderSummary = null;
+    let burger = props.error ? <p>Ingredient can't be loaded!</p> : <Spinner></Spinner>;
+
+    if (props.ings) {
+        burger = (
+            <Aux>
+                <Burger ingredients={props.ings} />
+                <div className={classes.burgerBuild} id="burgerControl" ref={buildControlRef}>Burger Controls</div>
+                <textarea
+                    rows="5"
+                    style={{ display: "block", margin: "0.5em auto" }}
+                    className="red center"
+                    defaultValue="Please Login to Order. Upon success you will redirect to Checkout Page with current Burger."
+                    ref={textarea} />
+
+                < BuildControls
+                    ingredientAdded={props.onIngredientAdded}
+                    ingredientRemove={props.onIngredientRemoved}
+                    disabled={disabledInfo}
+                    purchasable={updatePurchaseState(props.ings)}
+                    ordered={purchaseHandler}
+                    price={props.price}
+                    isAuth={props.isAuth}
+                />
+            </Aux >
+        );
+        orderSummary = (
+            <OrderSummary
+                ingredients={props.ings}
+                purchaseCancel={purchaseCancelHandler}
+                purchaseContinued={purchaseContinueHandler}
+                price={props.price} />
+        )
+
+    }
+    return (
+        <Aux>
+            <Modal show={purchasing} modalClosed={purchaseCancelHandler}>
+                {orderSummary}
+            </Modal>
+            <div className={classes.header}>Your Burger</div>
+            {burger}
+
+        </Aux>
+    );
 }
 
 const mapStateToProps = state => {

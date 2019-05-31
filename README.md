@@ -21,7 +21,7 @@
   - Firebase
 
 ## Live Server
-### `https://react-my-burger-b8b1b.firebaseapp.com`
+> ### [https://react-my-burger-b8b1b.firebaseapp.com](https://react-my-burger-b8b1b.firebaseapp.com)
 
 ## Available Scripts
 In the project directory, you can run:

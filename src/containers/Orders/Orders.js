@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 
 import Spinner from '../../components/UI/Spinner/Spinner';
 import { Link } from 'react-router-dom';
@@ -8,35 +8,34 @@ import axios from '../../axios-order';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import * as actions from '../../store';
 import { connect } from 'react-redux';
-export class Orders extends Component {
 
-    componentDidMount() {
-        this.props.onFetchOrders(this.props.token, this.props.userId);
-    }
+export const Orders = props => {
 
-    render() {
-        console.log(this.props.orders);
-        let orders = <Spinner></Spinner>
-        if (!this.props.loading) {
-            orders = this.props.orders.map(
-                order => (
-                    <Order
-                        key={order.id}
-                        ingredients={order.ingredients}
-                        price={order.price}
-                    />
-                )
+    useEffect(() => {
+        props.onFetchOrders(props.token, props.userId);
+    }, []);
+
+    console.log(props.orders);
+    let orders = <Spinner></Spinner>
+    if (!props.loading) {
+        orders = props.orders.map(
+            order => (
+                <Order
+                    key={order.id}
+                    ingredients={order.ingredients}
+                    price={order.price}
+                />
             )
-        }
-        let msg = orders.length < 1 ? <Link to={{ hash: "burgerControl", pathname: "/" }}><p style={{ textAlign: "center" }}>No recipe orders Yet! </p></Link> : null
-
-        return (
-            <div>
-                {msg}
-                {orders}
-            </div>
         )
     }
+    let msg = orders.length < 1 ? <Link to={{ hash: "burgerControl", pathname: "/" }}><p style={{ textAlign: "center" }}>No recipe orders Yet! </p></Link> : null
+
+    return (
+        <div>
+            {msg}
+            {orders}
+        </div>
+    )
 }
 
 const mapStateToProps = (state) => {
